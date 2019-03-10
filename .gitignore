@@ -1,0 +1,10 @@
+.idea
+.vscode
+.gradle
+.serverless
+.webpack
+.next
+build
+node_modules
+npm-debug.log*
+lerna-debug.log*
