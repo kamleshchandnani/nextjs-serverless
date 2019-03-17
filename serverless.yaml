@@ -2,17 +2,17 @@ service:
   name: nextjs-serverless
 
 plugins:
-  # - serverless-webpack
+  - serverless-webpack
   - serverless-offline
   - serverless-prune-plugin
   - serverless-plugin-warmup
 
 custom:
-  # webpack:
-  #   webpackConfig: webpack.server.js
-  #   includeModules:
-  #     forceExclude:
-  #       - aws-sdk
+  webpack:
+    webpackConfig: webpack.server.js
+    includeModules:
+      forceExclude:
+        - aws-sdk
   serverless-offline:
     port: 8000
   prune:
@@ -49,7 +49,7 @@ provider:
 functions:
   server:
     description: nextjs-serverless server handler
-    handler: server.handler
+    handler: src/server/serverless.handler
     memorySize: 128
     tracing: true
     events:

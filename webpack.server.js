@@ -1,16 +1,19 @@
 const path = require('path');
 const webpack = require('webpack');
 const slsw = require('serverless-webpack');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const nodeExternals = require('webpack-node-externals');
+
+const isProd = process.env.NODE_ENV === 'production';
 
 module.exports = {
-  mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
+  mode: isProd ? 'production' : 'development',
 
-  entry: slsw.lib.entries,
+  entry: process.env.STAGE === 'local' ? './src/server/next.js' : slsw.lib.entries,
 
   target: 'node',
 
   externals: [
+    nodeExternals(),
     'aws-sdk',
   ],
 
@@ -22,7 +25,22 @@ module.exports = {
 
   module: {
     rules: [
-      { test: /\.js$/, exclude: /node_modules/, use: ['babel-loader'] },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              ['next/babel', {
+                'preset-env': {
+                  modules: 'commonjs',
+                },
+              }],
+            ],
+          },
+        },
+      },
       { test: /\.mjs$/, type: 'javascript/auto', use: [] },
     ],
   },
@@ -30,8 +48,5 @@ module.exports = {
     new webpack.DefinePlugin({
       __STAGE__: JSON.stringify(process.env.STAGE),
     }),
-    new CopyWebpackPlugin([{
-      from: './next.config.js',
-    }], { copyUnmodified: true }),
   ],
 };
